@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'Error — Open Pages' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <main class="main-content">
+    <div class="error-page fade-in">
+      <div class="error-content">
+        <div class="error-code"><%= typeof statusCode !== 'undefined' ? statusCode : '500' %></div>
+        <h1 class="error-title">
+          <% if (typeof statusCode !== 'undefined' && statusCode === 404) { %>
+            Page Not Found
+          <% } else if (typeof statusCode !== 'undefined' && statusCode === 403) { %>
+            Access Denied
+          <% } else { %>
+            Something Went Wrong
+          <% } %>
+        </h1>
+        <p class="error-message"><%= typeof message !== 'undefined' ? message : 'An unexpected error occurred.' %></p>
+        <div class="error-actions">
+          <a href="/" class="btn btn--primary" id="errorHomeBtn">Go Home</a>
+          <a href="javascript:history.back()" class="btn btn--ghost" id="errorBackBtn">Go Back</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/app.js"></script>
+</body>
+</html>

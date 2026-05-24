@@ -1,0 +1,22 @@
+<!-- Footer Partial -->
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <span class="footer-logo">📖 Open<span class="logo-accent">Pages</span></span>
+      <p class="footer-tagline">Share your stories with the world.</p>
+    </div>
+    <div class="footer-links">
+      <a href="/" class="footer-link">Home</a>
+      <a href="/search" class="footer-link">Explore</a>
+      <% if (currentUser) { %>
+        <a href="/new" class="footer-link">Write</a>
+        <a href="/my-posts" class="footer-link">My Posts</a>
+        <% } else { %>
+          <a href="/register" class="footer-link">Get Started</a>
+          <% } %>
+    </div>
+    <div class="footer-copy">
+      <p>&copy; <%= new Date().getFullYear() %> Open Pages. Built with ❤️ by Akshant Verma</p>
+    </div>
+  </div>
+</footer>

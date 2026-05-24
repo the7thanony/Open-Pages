@@ -1,0 +1,67 @@
+<!-- Header Partial — Glassmorphic navigation bar -->
+<header class="site-header" id="siteHeader">
+  <nav class="nav-container">
+    <a href="/" class="nav-logo" id="logoLink">
+      <span class="logo-icon">📖</span>
+      <span class="logo-text">Open<span class="logo-accent">Pages</span></span>
+    </a>
+
+    <!-- Search Bar -->
+    <form class="nav-search" action="/search" method="GET" id="searchForm">
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" name="q" placeholder="Search posts..." value="<%= typeof search !== 'undefined' ? search : '' %>" class="search-input" id="searchInput">
+      </div>
+    </form>
+
+    <!-- Desktop Nav Links -->
+    <div class="nav-links" id="navLinks">
+      <a href="/" class="nav-link <%= currentPath === '/' ? 'active' : '' %>" id="homeLink">Home</a>
+      <a href="/search" class="nav-link <%= currentPath === '/search' ? 'active' : '' %>" id="exploreLink">Explore</a>
+
+      <% if (currentUser) { %>
+        <a href="/my-posts" class="nav-link <%= currentPath === '/my-posts' ? 'active' : '' %>" id="myPostsLink">My Posts</a>
+        <a href="/new" class="nav-link nav-link--cta" id="newPostLink">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Write
+        </a>
+
+        <!-- User Menu -->
+        <div class="user-menu" id="userMenu">
+          <button class="user-avatar" id="userAvatarBtn" aria-label="User menu">
+            <span class="avatar-initials"><%= getInitials(currentUser.display_name) %></span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="dropdown-header">
+              <span class="dropdown-name"><%= currentUser.display_name %></span>
+              <span class="dropdown-email"><%= currentUser.email %></span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="/my-posts" class="dropdown-item">📝 My Posts</a>
+            <div class="dropdown-divider"></div>
+            <form action="/logout" method="POST" class="dropdown-form">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="dropdown-item dropdown-item--danger">🚪 Log Out</button>
+            </form>
+          </div>
+        </div>
+      <% } else { %>
+        <a href="/login" class="nav-link <%= currentPath === '/login' ? 'active' : '' %>" id="loginLink">Log In</a>
+        <a href="/register" class="nav-link nav-link--cta" id="registerLink">Sign Up</a>
+      <% } %>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+</header>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Open Pages — Discover and share stories, ideas, and knowledge with a community of writers.">
+  <title><%= typeof title !== 'undefined' ? title : 'Open Pages' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="flash-container" id="flashContainer">
+    <%- include('partials/flash') %>
+  </div>
+
+  <main class="main-content">
+    <!-- Hero Section -->
+    <section class="hero fade-in" id="heroSection">
+      <div class="hero-content">
+        <h1 class="hero-title">Discover Stories That <span class="gradient-text">Inspire</span></h1>
+        <p class="hero-subtitle">A platform for thinkers, writers, and curious minds to share ideas that matter.</p>
+        <% if (!currentUser) { %>
+          <div class="hero-actions">
+            <a href="/register" class="btn btn--primary btn--lg" id="heroSignUp">Start Writing</a>
+            <a href="#postsGrid" class="btn btn--ghost btn--lg" id="heroExplore">Explore Posts</a>
+          </div>
+        <% } %>
+      </div>
+      <div class="hero-decoration">
+        <div class="hero-blob blob-1"></div>
+        <div class="hero-blob blob-2"></div>
+        <div class="hero-blob blob-3"></div>
+      </div>
+    </section>
+
+    <!-- Posts Grid -->
+    <section class="posts-section" id="postsGrid">
+      <div class="section-header">
+        <h2 class="section-title">
+          <% if (search) { %>
+            Results for "<%= search %>"
+          <% } else { %>
+            Latest Posts
+          <% } %>
+        </h2>
+        <% if (search) { %>
+          <a href="/" class="btn btn--ghost btn--sm">Clear Search</a>
+        <% } %>
+      </div>
+
+      <% if (posts.length === 0) { %>
+        <div class="empty-state fade-in">
+          <div class="empty-icon">📭</div>
+          <h3 class="empty-title">
+            <% if (search) { %>
+              No posts found for "<%= search %>"
+            <% } else { %>
+              No posts yet
+            <% } %>
+          </h3>
+          <p class="empty-text">
+            <% if (search) { %>
+              Try a different search term or browse all posts.
+            <% } else { %>
+              Be the first to share your story!
+            <% } %>
+          </p>
+          <% if (currentUser) { %>
+            <a href="/new" class="btn btn--primary">Write a Post</a>
+          <% } %>
+        </div>
+      <% } else { %>
+        <div class="posts-grid">
+          <% posts.forEach((post, index) => { %>
+            <article class="post-card fade-in" style="animation-delay: <%= index * 0.08 %>s" id="post-<%= post.id %>">
+              <div class="post-card__header">
+                <div class="post-card__meta">
+                  <div class="author-chip">
+                    <span class="author-avatar"><%= getInitials(post.author || 'Unknown') %></span>
+                    <span class="author-name"><%= post.author || 'Unknown' %></span>
+                  </div>
+                  <span class="meta-dot">·</span>
+                  <time class="post-date" datetime="<%= post.created_at %>"><%= timeAgo(post.created_at) %></time>
+                </div>
+                <% if (post.status === 'draft') { %>
+                  <span class="badge badge--draft">Draft</span>
+                <% } %>
+              </div>
+
+              <a href="/post/<%= post.id %>" class="post-card__body">
+                <h3 class="post-card__title"><%= post.title %></h3>
+                <p class="post-card__excerpt"><%= truncate(post.content, 180) %></p>
+              </a>
+
+              <div class="post-card__footer">
+                <span class="reading-time">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <%= readingTime(post.content) %>
+                </span>
+                <% if (post.updated_at && new Date(post.updated_at) > new Date(post.created_at)) { %>
+                  <span class="edited-badge">Edited</span>
+                <% } %>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+
+        <!-- Pagination -->
+        <% if (pagination.totalPages > 1) { %>
+          <nav class="pagination" aria-label="Page navigation" id="pagination">
+            <% if (pagination.hasPrev) { %>
+              <a href="/?page=<%= pagination.page - 1 %><%= search ? '&q=' + search : '' %>" class="pagination-btn" id="prevPage">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Previous
+              </a>
+            <% } else { %>
+              <span class="pagination-btn pagination-btn--disabled">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Previous
+              </span>
+            <% } %>
+
+            <span class="pagination-info">Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+
+            <% if (pagination.hasNext) { %>
+              <a href="/?page=<%= pagination.page + 1 %><%= search ? '&q=' + search : '' %>" class="pagination-btn" id="nextPage">
+                Next
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </a>
+            <% } else { %>
+              <span class="pagination-btn pagination-btn--disabled">
+                Next
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </span>
+            <% } %>
+          </nav>
+        <% } %>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="<%= post ? post.title : 'Read this post' %> — Open Pages">
+  <title><%= typeof title !== 'undefined' ? title : 'Post — Open Pages' %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Source+Sans+3:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <%- include('partials/header') %>
+
+  <div class="flash-container" id="flashContainer">
+    <%- include('partials/flash') %>
+  </div>
+
+  <main class="main-content">
+    <article class="post-full fade-in" id="postArticle">
+      <!-- Back Link -->
+      <a href="/" class="back-link" id="backLink">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Back to posts
+      </a>
+
+      <!-- Post Header -->
+      <header class="post-full__header">
+        <% if (post.status === 'draft') { %>
+          <span class="badge badge--draft badge--lg">Draft — Only you can see this</span>
+        <% } %>
+
+        <h1 class="post-full__title"><%= post.title %></h1>
+
+        <div class="post-full__meta">
+          <div class="author-chip author-chip--lg">
+            <span class="author-avatar author-avatar--lg"><%= getInitials(post.author || 'Unknown') %></span>
+            <div class="author-info">
+              <span class="author-name"><%= post.author || 'Unknown' %></span>
+              <div class="meta-details">
+                <time datetime="<%= post.created_at %>"><%= formatDate(post.created_at) %></time>
+                <span class="meta-dot">·</span>
+                <span><%= readingTime(post.content) %></span>
+                <% if (post.updated_at && new Date(post.updated_at).getTime() - new Date(post.created_at).getTime() > 60000) { %>
+                  <span class="meta-dot">·</span>
+                  <span class="edited-badge">Edited <%= timeAgo(post.updated_at) %></span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <% if (currentUser && currentUser.id === post.user_id) { %>
+            <div class="post-actions" id="postActions">
+              <a href="/edit/<%= post.id %>" class="btn btn--ghost btn--sm" id="editPostBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Edit
+              </a>
+              <form action="/delete/<%= post.id %>" method="POST" class="inline-form" id="deleteForm">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn--danger btn--sm" id="deletePostBtn" onclick="return confirm('Are you sure you want to delete this post?')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Delete
+                </button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+      </header>
+
+      <!-- Post Content -->
+      <div class="post-full__content" id="postContent">
+        <%- post.content.replace(/\n/g, '<br>') %>
+      </div>
+    </article>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/app.js"></script>
+</body>
+</html>
